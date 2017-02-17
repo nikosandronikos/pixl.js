@@ -4,7 +4,7 @@ Renderer for (primarily) 2d pixel graphics games built on [Pixi.js](https://gith
 I'm building this as a component of a spaceship battle game, which is at:
 https://github.com/nikosandronikos/spacebattle
 
-# Dependencies
+## Dependencies
 Requires the [2dGameUtils](https://github.com/nikosandronikos/2dGameUtils) library, which must be located in
 the same directory that this project is checked out into.
 
@@ -14,7 +14,7 @@ git clone https://github.com/nikosandronikos/pixl.js.git
 git clone https://github.com/nikosandronikos/2dGameUtils.git
 ```
 
-# Initialisation
+## Initialisation
 The Renderer singleton must be initialised before use, and before assets are loaded.
 ```javascript
 // Initialise Pixl
@@ -50,7 +50,7 @@ function start() {
 };
 ```
 
-# Definitions
+## Definitions
 To render things with Pixl, assets are supplied via templates, then instantiated with `RenderObject.createFromConfig`.
 The assets definition is an object made up of a specific collection of properties that define the texture atlas, the templates for RenderObjects, and some optional visual configurations for RenderObjects.
 RenderObjects are a complex entity, that is made up of a tree of containers, sprites, and animated sprites. Nodes of a RenderObject may be named so they can be referenced in visual configurations.
@@ -110,3 +110,8 @@ export const RendererAssets = {
 		}
 };
 ```
+## To do:
+* Optimise SceneryLayer so sprites make use of a sprite pool and offscreen sprites are removed
+* Support container nodes on RenderObject
+* Implement particle system
+* Lots more I'm sure...
