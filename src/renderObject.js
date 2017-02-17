@@ -1,4 +1,4 @@
-import {DEG_TO_RAD} from '../../2dGameUtils/src/geometry';
+import {DEG_TO_RAD} from '../../2dGameUtils';
 
 import {AnimatedSprite} from './animatedSprite';
 import {Renderer} from './renderer';

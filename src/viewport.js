@@ -1,5 +1,5 @@
-import {Rect} from '../../2dGameUtils/src/geometry';
-import {mixin, ObservableMixin} from '../../2dGameUtils/src/pattern';
+import {Rect} from '../../2dGameUtils';
+import {mixin, ObservableMixin} from '../../2dGameUtils';
 
 export class ViewPort extends Rect {
 	constructor(screenWidth, screenHeight, bounds, x1, y1, x2, y2) {

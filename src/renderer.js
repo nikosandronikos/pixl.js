@@ -1,5 +1,5 @@
-import {DEG_TO_RAD} from '../../2dGameUtils/src/geometry';
-import {mixin, ObservableMixin} from '../../2dGameUtils/src/pattern';
+import {DEG_TO_RAD} from '../../2dGameUtils';
+import {mixin, ObservableMixin} from '../../2dGameUtils';
 
 import {SceneryParallaxLayer, ParallaxLayer} from './layer';
 import {RenderObject} from './renderObject';

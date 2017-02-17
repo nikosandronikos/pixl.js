@@ -1,4 +1,4 @@
-import {mixin} from '../../2dGameUtils/src/pattern';
+import {mixin} from '../../2dGameUtils';
 
 import {Renderer} from './renderer';
 
