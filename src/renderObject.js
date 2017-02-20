@@ -114,6 +114,7 @@ export class RenderObject {
 		for (let config of this.configs[name]) {
 			const node = this.namedNodes[config.name];
 			for (let key in config) {
+				if (key === 'name') continue;
 				if (key == 'animation') {
 					const node = this.namedAnimNodes[config.name];
 					switch (config.animation.control) {
