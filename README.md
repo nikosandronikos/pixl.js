@@ -24,29 +24,29 @@ Renderer.init(window.innerWidth, window.innerHeight);
 Renderer.loadAssets(RendererAssets, start);
 
 function start() {
-	const nStarDefs = 12;
-	const renderObjects = [];
+    const nStarDefs = 12;
+    const renderObjects = [];
 
-	// Layers of stars that will scroll with parallax as the ViewPort is moved
-	for (let layer = 25, layerNum = 0; layerNum < 3; layer *= 2, layerNum++) {
-		const sceneryLayer = Renderer.createSceneryLayer(layer);
+    // Layers of stars that will scroll with parallax as the ViewPort is moved
+    for (let layer = 25, layerNum = 0; layerNum < 3; layer *= 2, layerNum++) {
+        const sceneryLayer = Renderer.createSceneryLayer(layer);
 
-		for (let i = 0; i < 500 * layer; i++) {
-			sceneryLayer.addSprite(
-				Math.random() * Renderer.bounds.x,
-				Math.random() * Renderer.bounds.y,
-				pickAStar(layerNum)
-			);
-		}
-	}
+        for (let i = 0; i < 500 * layer; i++) {
+            sceneryLayer.addSprite(
+                Math.random() * Renderer.bounds.x,
+                Math.random() * Renderer.bounds.y,
+                pickAStar(layerNum)
+            );
+        }
+    }
 
-	const playerLayer = Renderer.createLayer(100);
-	const player = RenderObject.createFromConfig('uship', playerLayer);
+    const playerLayer = Renderer.createLayer(100);
+    const player = RenderObject.createFromConfig('uship', playerLayer);
 
-	player.moveTo(800,600);
-	player.applyConfig('engineStart');
+    player.moveTo(800,600);
+    player.applyConfig('engineStart');
 
-	Renderer.viewPort.lookAtRect(new Rect(750,550,1050,750));
+    Renderer.viewPort.lookAtRect(new Rect(750,550,1050,750));
 };
 ```
 
@@ -59,55 +59,55 @@ Visual configurations control the visual state of the RenderObject, including wh
 An example configuration:
 ```javascript
 export const RendererAssets = {
-	atlas: ['atlas.json'],
-	templates: {
-		'ushipBasic': {
-			base: {
-				type: 'sprite',
-				sprite: 'USpaceShip--'
-			}
-		},
-		'uship': {
-			base: {
-				//name: 'main'				// Name is optional, used to refer to nodes explicitly
-				type: 'sprite',				// Can be container|sprite|animatedSprite
-				sprite: 'USpaceShip--',	// Only for type:sprite
-				//animations: [],			// Only for type:animatedSprite
-				//pivot: {x: 0.5, y: 0.5},	// Mid point is the default
-				//rotation: 90, 			// 0 is the default
-				//visible: true				/// true|false, true is default
-				children: [
-					{
-						name: 'engine',		// Give a name because we'll want to hide this
-						type: 'animatedSprite',
-						position: {x: -18, y: 0}, // Relative to pivot of parent
-						frames: ['USpaceShipEngine--0', 'USpaceShipEngine--1', 'USpaceShipEngine--2'],
-						//animationSpeed: 100		// ms per frame - default is 100
-					},
-					{
-						name: 'engineStart',
-						type: 'animatedSprite',
-						position: {x: -18, y: 0},
-						frames: ['USpaceShipEngine--0', 'USpaceShipEngine--1', 'USpaceShipEngine--2'],
-						visible: false,
-					}
-				]
-			},
-			configs: {
-				engineStart: [
-					{name: 'engine', visible: false, animation: {control: 'stop'}} ,
-					{name: 'engineStart', visible: true, animation: {control: 'start', repeats: 1, onEnd: 'engineOn'}},
-				],
-				engineOn: [
-					{name: 'engineStart', visible: false, animation: {control: 'stop'}},
-					{name: 'engine', visible: true, animation: {control: 'start', repeats: Infinity}} 
-				],
-				engineOff: [
-					{name: 'engineStart', visible: false, animation: {control: 'stop'}},
-					{name: 'engine', visible: false, animation: {control: 'stop'}} 
-				],
-			}
-		}
+    atlas: ['atlas.json'],
+    templates: {
+        'ushipBasic': {
+            base: {
+                type: 'sprite',
+                sprite: 'USpaceShip--'
+            }
+        },
+        'uship': {
+            base: {
+                //name: 'main'              // Name is optional, used to refer to nodes explicitly
+                type: 'sprite',             // Can be container|sprite|animatedSprite
+                sprite: 'USpaceShip--', // Only for type:sprite
+                //animations: [],           // Only for type:animatedSprite
+                //pivot: {x: 0.5, y: 0.5},  // Mid point is the default
+                //rotation: 90,             // 0 is the default
+                //visible: true             /// true|false, true is default
+                children: [
+                    {
+                        name: 'engine',     // Give a name because we'll want to hide this
+                        type: 'animatedSprite',
+                        position: {x: -18, y: 0}, // Relative to pivot of parent
+                        frames: ['USpaceShipEngine--0', 'USpaceShipEngine--1', 'USpaceShipEngine--2'],
+                        //animationSpeed: 100       // ms per frame - default is 100
+                    },
+                    {
+                        name: 'engineStart',
+                        type: 'animatedSprite',
+                        position: {x: -18, y: 0},
+                        frames: ['USpaceShipEngine--0', 'USpaceShipEngine--1', 'USpaceShipEngine--2'],
+                        visible: false,
+                    }
+                ]
+            },
+            configs: {
+                engineStart: [
+                    {name: 'engine', visible: false, animation: {control: 'stop'}} ,
+                    {name: 'engineStart', visible: true, animation: {control: 'start', repeats: 1, onEnd: 'engineOn'}},
+                ],
+                engineOn: [
+                    {name: 'engineStart', visible: false, animation: {control: 'stop'}},
+                    {name: 'engine', visible: true, animation: {control: 'start', repeats: Infinity}} 
+                ],
+                engineOff: [
+                    {name: 'engineStart', visible: false, animation: {control: 'stop'}},
+                    {name: 'engine', visible: false, animation: {control: 'stop'}} 
+                ],
+            }
+        }
 };
 ```
 ## To do:
