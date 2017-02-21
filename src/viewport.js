@@ -1,14 +1,24 @@
 import {Rect} from '../../2dGameUtils';
-import {mixin, ObservableMixin} from '../../2dGameUtils';
+
+import {SceneryParallaxLayer, ParallaxLayer} from './layer';
+import {RenderObject} from './renderObject';
 
 export class ViewPort extends Rect {
-	constructor(screenWidth, screenHeight, bounds, x1, y1, x2, y2) {
+	constructor(renderer, x1, y1, x2, y2) {
 		super(x1, y1, x2, y2);
-		this.screenWidth = screenWidth;
-		this.screenHeight = screenHeight;
-		this.bounds = bounds;
+		this.renderer = renderer;
 		this.zoom = 1;
 		this.maxZoom = 8;
+		this.layers = [];
+
+		this.debugLayer = this.createLayer();
+		this.debugMarkers = {
+			Center: RenderObject.createFromConfig('MarkerCenter', this.debugLayer),
+			UL: 	RenderObject.createFromConfig('MarkerUL', this.debugLayer),
+			UR: 	RenderObject.createFromConfig('MarkerUR', this.debugLayer),
+			LL: 	RenderObject.createFromConfig('MarkerLL', this.debugLayer),
+			LR: 	RenderObject.createFromConfig('MarkerLR', this.debugLayer)
+		};
 	}
 
 	_clamp() {
@@ -16,9 +26,9 @@ export class ViewPort extends Rect {
 			const width = this.width;
 			this.x1 = 0;
 			this.x2 = width;
-		} else if (this.x2 >= this.bounds.x) {
+		} else if (this.x2 >= this.renderer.bounds.x) {
 			const width = this.width;
-			this.x2 = this.bounds.x;
+			this.x2 = this.renderer.bounds.x;
 			this.x1 = this.x2 - width;
 		}
 
@@ -26,21 +36,20 @@ export class ViewPort extends Rect {
 			const height = this.height;
 			this.y1 = 0;
 			this.y2 = height;
-		} else if (this.y2 >= this.bounds.y) {
+		} else if (this.y2 >= this.renderer.bounds.y) {
 			const height = this.height;
-			this.y2 = this.bounds.y;
+			this.y2 = this.renderer.bounds.y;
 			this.y1 = this.y2 - height;
 		}
 	}
 
 	move(x, y) {
-		if (x >= 0 && x < this.bounds.x);
+		if (x >= 0 && x < this.renderer.bounds.x);
 		this.x1 = x;
 		this.y1 = y;
 		this.x2 = x + this.width;
 		this.y2 = y + this.height;
 		this._clamp();
-		this.notifyObservers('viewPortUpdate');
 	}
 
 	moveBy(x, y) {
@@ -49,7 +58,6 @@ export class ViewPort extends Rect {
 		this.x2 += x;
 		this.y2 += y;
 		this._clamp();
-		this.notifyObservers('viewPortUpdate');
 	}
 
 	lookAtPoint(point) {
@@ -60,32 +68,62 @@ export class ViewPort extends Rect {
 		this.x2 = this.x1 + width;
 		this.y2 = this.y1 + height;
 		this._clamp();
-		this.notifyObservers('viewPortUpdate');
 	}
 
 	lookAtRect(rect) {
-		let 	xFit = this.screenWidth / rect.width,
-				yFit = this.screenHeight / rect.height;
+		let 	xFit = this.renderer.width / rect.width,
+				yFit = this.renderer.height / rect.height;
 		const 	mid = rect.midPoint();
 
 		const zoom = Math.min(Math.min(xFit, yFit), this.maxZoom);
 
 		if (zoom >= 1) this.zoom = ~~zoom;
 		else {
-			xFit = this.screenWidth / this.bounds.x;
-			yFit = this.screenHeight / this.bounds.y;
+			xFit = this.renderer.width / this.renderer.bounds.x;
+			yFit = this.renderer.height / this.renderer.bounds.y;
 			this.zoom = Math.min(xFit, yFit);
 		}
 
-		const 	width = this.screenWidth / this.zoom,
-				height = this.screenHeight / this.zoom;
+		const 	width = this.renderer.width / this.zoom,
+				height = this.renderer.height / this.zoom;
 
 		this.x1 = mid.x - (width / 2);
 		this.y1 = mid.y - (height / 2);
 		this.x2 = this.x1 + width;
 		this.y2 = this.y1 + height;
 		this._clamp();
-		this.notifyObservers('viewPortUpdate');
+		this._updateParallax();
+	}
+
+	_updateParallax() {
+		for (let layer of this.layers) {
+			layer.scale.set(this.zoom, this.zoom);
+			layer.position.set(~~-(this.x * layer.parallaxMod * this.zoom), ~~-(this.y * layer.parallaxMod * this.zoom));
+		}
+		this.debugMarkers['Center'].moveTo(this.midPoint().x, this.midPoint().y);
+		this.debugMarkers['UL'].moveTo(this.x1, this.y1);
+		this.debugMarkers['UR'].moveTo(this.x2, this.y1);
+		this.debugMarkers['LL'].moveTo(this.x1, this.y2);
+		this.debugMarkers['LR'].moveTo(this.x2, this.y2);
+	}
+
+	_createParallaxTypeLayer(parallax, type) {
+		if (parallax < 0 || parallax > 200) throw new RangeError('parallax out of range');
+
+		const layer = new type(parallax, this);
+		this.renderer.addLayer(layer);
+		this.layers.push(layer);
+		return layer;
+	}
+
+	// Parallax is a percentage value representing how
+	// fast the layer moves relative to the baseline layer
+	// (100%). Values up to 200% are supported.
+	createSceneryLayer(parallax) {
+		return this._createParallaxTypeLayer(parallax, SceneryParallaxLayer);
+	}
+
+	createLayer(parallax=100) {
+		return this._createParallaxTypeLayer(parallax, ParallaxLayer);
 	}
 }
-mixin(ViewPort, ObservableMixin);

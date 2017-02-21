@@ -29,9 +29,9 @@ const ParallaxLayerMixin = {
 //	- Assumes objects are added in one go and no more are added (support freezing)
 //	- Assumes objects are evenly distributed
 export class SceneryParallaxLayer extends PIXI.ParticleContainer {
-	constructor(parallax) {
+	constructor(parallax, viewPort) {
 		super();
-		this.initParallaxLayer(parallax, Renderer.viewPort, Renderer.bounds);
+		this.initParallaxLayer(parallax, viewPort, viewPort.renderer.bounds);
 	}
 
 	// TODO: 
@@ -47,9 +47,9 @@ mixin(SceneryParallaxLayer, ParallaxLayerMixin);
 // It's possible that ParticleContainer may be appropriate here
 // depending on what advanced features I end up using.
 export class ParallaxLayer extends PIXI.Container {
-	constructor(parallax) {
+	constructor(parallax, viewPort) {
 		super();
-		this.initParallaxLayer(parallax, Renderer.viewPort, Renderer.bounds);
+		this.initParallaxLayer(parallax, viewPort, viewPort.renderer.bounds);
 	}
 };
 mixin(ParallaxLayer, ParallaxLayerMixin);
