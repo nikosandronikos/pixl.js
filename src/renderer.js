@@ -1,7 +1,7 @@
 import {DEG_TO_RAD} from '../../2dGameUtils';
 import {mixin, ObservableMixin} from '../../2dGameUtils';
 
-import {SceneryParallaxLayer, ParallaxLayer} from './layer';
+import {ScreenLayer, SceneryParallaxLayer, ParallaxLayer} from './layer';
 import {RenderObject} from './renderObject';
 import {ViewPort} from './viewport';
 
@@ -34,6 +34,17 @@ export const Renderer = {
         return vp;
     },
 
+    createScreenLayer() {
+        const layer = new ScreenLayer();
+        this.addLayer(layer);
+        return layer;
+    },
+
+    addLayer: function(layer) {
+        this.stage.addChild(layer);
+        this.stage.children.sort((a, b) => b.parallax < a.parallax);
+    },
+
     _completeLoadAssets(json, completeFn) {
         if (completeFn !== undefined)
             completeFn();
@@ -42,11 +53,6 @@ export const Renderer = {
     loadAssets: function(assets, completeFn) {
         this.assets = assets;
         PIXI.loader.add(assets.atlas).load(this._completeLoadAssets.bind(this, assets, completeFn));
-    },
-
-    addLayer: function(layer) {
-        this.stage.addChild(layer);
-        this.stage.children.sort((a, b) => b.parallax < a.parallax);
     },
 
     renderFrame: function() {

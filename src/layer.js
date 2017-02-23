@@ -2,6 +2,19 @@ import {mixin} from '../../2dGameUtils';
 
 import {Renderer} from './renderer';
 
+// A layer that is always the size of the screen
+// Generally intended for UI elements
+export class ScreenLayer extends PIXI.Container {
+    constructor() {
+        super();
+        // Has no parallax. Setting this to infinity will
+        // cause it to always be sorted to the top of the stack of
+        // layers.
+        // TODO: Call this z-index and separate from the parallax property.
+        this.parallax = Infinity;
+    }
+};
+
 // Requires PIXI.Container interface on class it is mixed into
 const ParallaxLayerMixin = {
     initParallaxLayer: function(parallax, viewPort, bounds) {
