@@ -13,11 +13,11 @@ export class ViewPort extends Rect {
 
         this.debugLayer = this.createLayer();
         this.debugMarkers = {
-            Center: RenderObject.createFromConfig('MarkerCenter', this.debugLayer),
-            UL:     RenderObject.createFromConfig('MarkerUL', this.debugLayer),
-            UR:     RenderObject.createFromConfig('MarkerUR', this.debugLayer),
-            LL:     RenderObject.createFromConfig('MarkerLL', this.debugLayer),
-            LR:     RenderObject.createFromConfig('MarkerLR', this.debugLayer)
+            Center: new RenderObject('MarkerCenter', this.debugLayer),
+            UL:     new RenderObject('MarkerUL', this.debugLayer),
+            UR:     new RenderObject('MarkerUR', this.debugLayer),
+            LL:     new RenderObject('MarkerLL', this.debugLayer),
+            LR:     new RenderObject('MarkerLR', this.debugLayer)
         };
     }
 

@@ -3,51 +3,101 @@ import {DEG_TO_RAD} from '../../2dGameUtils';
 import {AnimatedSprite} from './animatedSprite';
 import {Renderer} from './renderer';
 
+class MoveableSprite {
+    constructor(sprite=null) {
+        this.sprite = sprite;
+        this.x = 0;
+        this.y = 0;
+        this.rotateAngle = 0;
+    }
+
+    moveTo(x, y) {
+        this.x = x;
+        this.y = y;
+        this.sprite.position.set(~~x, ~~y);
+        return this;
+    }
+
+    move(vector2d) {
+        this.x = this.x + vector2d.x;
+        this.y = this.y + vector2d.y;
+        this.sprite.position.set(~~this.x, ~~this.y);
+        return this;
+    }
+
+    rotate(angleDeg) {
+        this.rotateAngle = angleDeg;
+        this.sprite.rotation = angleDeg * DEG_TO_RAD;
+        return this;    
+    }
+}
+
+export class RenderText extends MoveableSprite {
+    constructor(text, style, renderLayer) {
+        super(new PIXI.Text(text, style));
+        // Put the anchor point on the baseline
+        this.sprite.anchor.set(0, 1);
+        // Scale the text to make it pixellated
+        this.sprite.scale.set(2, 2);
+        renderLayer.addChild(this.sprite);
+        this.layer = renderLayer;
+        console.log('Created text saying "${text}"');
+    }
+
+    remove() {
+        this.layer.removeChild(this.sprite);
+        this.sprite.destroy(true);
+        console.log('Removed text');
+    }
+
+    center(layoutRect) {
+        const   textRect = this.sprite.getBounds(true);
+        // Control point is on far left, and on baseline, so x and y 
+        // calculations are different because of this.
+        return this.moveTo(
+            (layoutRect.width - textRect.width * this.sprite.scale.x) / 2 + layoutRect.x,
+            layoutRect.height / 2 + layoutRect.y
+        );
+    }
+}
+
 // This class wraps the underlying renderer's graphics
 // objects.
 // It holds some additional
 // information that allows us to apply configs to named
 // nodes, etc.
-export class RenderObject {
-    constructor(sprite) {
-        throw 'Create via RenderObject.createFromConfig()';
-    }
-
+export class RenderObject extends MoveableSprite {
     // Create a renderObject from the object literial
     // configuration and add it to renderLayer.
-    static createFromConfig(configName, renderLayer) {
+    constructor(configName, renderLayer) {
+        super();
 
         if (!(configName in Renderer.assets.templates)) {
             throw `${configName} not in renderer.assets.`;
-            return null;
         }
 
         const config = Renderer.assets.templates[configName];
-        const ro = Object.create(RenderObject.prototype);
 
         // Notes the objects that are named for specific access.
         // Other nodes are part of the PIXI tree
         // structure but can't be explicitly accessed
         // except through that tree.
-        ro.namedNodes = {};
-        ro.namedAnimNodes = {};
+        this.namedNodes = {};
+        this.namedAnimNodes = {};
 
         if (!('base' in config)) {
             throw `'base' not in config.`;
             return null;
         }
 
-        ro.sprite = ro._createRenderTreeNode(config.base);
-        ro.rotateAngle = 0;
-        ro.moveTo(0, 0);
+        this.sprite = this._createRenderTreeNode(config.base);
 
-        renderLayer.addChild(ro.sprite);
+        renderLayer.addChild(this.sprite);
+        this.layer = renderLayer;
 
-        ro.configs = 'configs' in config ? config.configs : [];
+        this.configs = 'configs' in config ? config.configs : [];
 
-        ro.animEndHandlers = {};
-
-        return ro;
+        this.animEndHandlers = {};
     }
 
     _createRenderTreeNode(defn) {
@@ -137,23 +187,7 @@ export class RenderObject {
         return this;
     }
 
-    move(vector2d) {
-        this.x = this.x + vector2d.x;
-        this.y = this.y + vector2d.y;
-        this.sprite.position.set(~~this.x, ~~this.y);
-        return this;
-    }
-
-    moveTo(x, y) {
-        this.x = x;
-        this.y = y;
-        this.sprite.position.set(~~x, ~~y);
-        return this;
-    }
-
-    rotate(angleDeg) {
-        //this.rotateAngle = angleDeg;
-        this.sprite.rotation = angleDeg * DEG_TO_RAD;
-        return this;    
+    remove() {
+        throw new Error('Not implemented');
     }
 };
