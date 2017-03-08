@@ -7,6 +7,7 @@ export class ViewPort extends Rect {
     constructor(renderer, x1, y1, x2, y2) {
         super(x1, y1, x2, y2);
         this.renderer = renderer;
+        this.renderer.addObserver('boundsChanged', this._updateRendererBounds.bind(this));
         this.zoom = 1;
         this.maxZoom = 8;
         this.layers = [];
@@ -19,6 +20,12 @@ export class ViewPort extends Rect {
             LL:     new RenderObject('MarkerLL', this.debugLayer),
             LR:     new RenderObject('MarkerLR', this.debugLayer)
         };
+    }
+
+    _updateRendererBounds(bounds) {
+        for (let layer of this.layers) {
+            layer.updateViewPortExtents(this, bounds);
+        }
     }
 
     _clamp() {
@@ -98,7 +105,7 @@ export class ViewPort extends Rect {
     _updateParallax() {
         for (let layer of this.layers) {
             layer.scale.set(this.zoom, this.zoom);
-            layer.position.set(~~-(this.x * layer.parallaxMod * this.zoom), ~~-(this.y * layer.parallaxMod * this.zoom));
+            layer.position.set(~~-(this.x * layer.parallaxXMod * this.zoom), ~~-(this.y * layer.parallaxYMod * this.zoom));
         }
         this.debugMarkers['Center'].moveTo(this.midPoint().x, this.midPoint().y);
         this.debugMarkers['UL'].moveTo(this.x1, this.y1);
@@ -116,9 +123,9 @@ export class ViewPort extends Rect {
         return layer;
     }
 
-    // Parallax is a percentage value representing how
-    // fast the layer moves relative to the baseline layer
-    // (100%). Values up to 200% are supported.
+    // Parallax is a whole number representing a percentage value that
+    // controls how fast the layer moves relative to the baseline layer
+    // (which is at 100%). Values in the range 0..200 are supported
     createSceneryLayer(parallax) {
         return this._createParallaxTypeLayer(parallax, SceneryParallaxLayer);
     }

@@ -19,12 +19,20 @@ export class ScreenLayer extends PIXI.Container {
 const ParallaxLayerMixin = {
     initParallaxLayer: function(parallax, viewPort, bounds) {
         this.parallax = parallax;
-        this.parallaxMod = parallax / 100;
-        this._parallaxXMod = (viewPort.width + (bounds.x - viewPort.width) * this.parallaxMod) / bounds.x;
-        this._parallaxYMod = (viewPort.height + (bounds.y - viewPort.height) * this.parallaxMod) / bounds.y;
+        this._calcParallaxMod(viewPort, bounds);
+    },
+    _calcParallaxMod(viewPort, bounds) {
+        const parallaxMod = this.parallax / 100;
+        this.parallaxXMod = (viewPort.width + (bounds.x - viewPort.width) * parallaxMod) / bounds.x;
+        this.parallaxYMod = (viewPort.height + (bounds.y - viewPort.height) * parallaxMod) / bounds.y;
+    },
+    // Must be called when the boundaries of the renderer, or the viewPort
+    // change.
+    updateViewPortExtents(viewPort, bounds) {
+        this._calcParallaxMod(viewPort, bounds);
     },
     parallaxCoord: function(x, y) {
-        return {x: x * this._parallaxXMod, y: y * this._parallaxYMod};
+        return {x: x * this.parallaxXMod, y: y * this.parallaxYMod};
     },
     addSprite: function(x, y, image) {
         const sprite = new PIXI.Sprite(PIXI.loader.resources['atlas.json'].textures[image]);

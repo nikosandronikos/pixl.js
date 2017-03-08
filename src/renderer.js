@@ -1,5 +1,5 @@
 import {DEG_TO_RAD} from '../../2dGameUtils';
-import {mixin, ObservableMixin} from '../../2dGameUtils';
+import {mixinOnObj, ObservableMixin} from '../../2dGameUtils';
 
 import {ScreenLayer, SceneryParallaxLayer, ParallaxLayer} from './layer';
 import {RenderObject} from './renderObject';
@@ -17,7 +17,7 @@ export const Renderer = {
         this.pixi.view.id = 'renderer';
         this.stage = new PIXI.Container();
 
-        this.bounds = {x: width * 4, y: height * 4};
+        this.bounds = {x: width, y: height};
 
         this.viewPorts = [];
 
@@ -26,6 +26,14 @@ export const Renderer = {
         this.runningAnimations = [];
 
         this.frameNo = 0;
+    },
+
+    setBounds(x, y) {
+        if (x < 1 || y < 1) throw new Error('bounds must be positive');
+        this.bounds.x = x;
+        this.bounds.y = y;
+
+        this.notifyObservers('boundsChanged', this.bounds);
     },
 
     createViewPort(rect) {
@@ -65,3 +73,4 @@ export const Renderer = {
         this.pixi.render(this.stage);
     }
 }
+mixinOnObj(Renderer, ObservableMixin);
