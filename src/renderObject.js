@@ -98,6 +98,9 @@ export class RenderObject extends MoveableSprite {
         this.configs = 'configs' in config ? config.configs : [];
 
         this.animEndHandlers = {};
+
+        if ('initialConfig' in config)
+            this.applyConfig(config.initialConfig);
     }
 
     _createRenderTreeNode(defn) {
