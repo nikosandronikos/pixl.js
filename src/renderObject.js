@@ -41,13 +41,11 @@ export class RenderText extends MoveableSprite {
         this.sprite.scale.set(2, 2);
         renderLayer.addChild(this.sprite);
         this.layer = renderLayer;
-        console.log('Created text saying "${text}"');
     }
 
     remove() {
         this.layer.removeChild(this.sprite);
         this.sprite.destroy(true);
-        console.log('Removed text');
     }
 
     center(layoutRect) {
