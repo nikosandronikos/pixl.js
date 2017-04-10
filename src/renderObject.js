@@ -188,7 +188,8 @@ export class RenderObject extends MoveableSprite {
         return this;
     }
 
+    // Remove from render tree, but do not destroy this RenderObject
     remove() {
         throw new Error('Not implemented');
     }
-};
+}
