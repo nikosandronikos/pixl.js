@@ -11,6 +11,22 @@ class MoveableSprite {
         this.rotateAngle = 0;
     }
 
+    destroy() {
+        this.remove();
+        // Don't destroy textures because we use a sprite sheet that is shared.
+        this.sprite.destroy({children: true, texture: false, baseTexture: false});
+        delete this.sprite;
+    }
+
+    // Remove from render tree, but do not destroy this object
+    remove() {
+        this.layer.removeChild(this.sprite);
+    }
+
+    insertInLayer() {
+        this.layer.addChild(this.sprite);
+    }
+
     moveTo(x, y) {
         this.x = x;
         this.y = y;
@@ -43,9 +59,10 @@ export class RenderText extends MoveableSprite {
         this.layer = renderLayer;
     }
 
-    remove() {
-        this.layer.removeChild(this.sprite);
-        this.sprite.destroy(true);
+    destroy() {
+        this.remove();
+        this.sprite.destroy({children: true, texture: true, baseTexture: true});
+        delete this.sprite;
     }
 
     center(layoutRect) {
@@ -99,6 +116,14 @@ export class RenderObject extends MoveableSprite {
 
         if ('initialConfig' in config)
             this.applyConfig(config.initialConfig);
+    }
+
+    destroy() {
+        super.destroy();
+        delete this.namedNodes;
+        delete this.namedAnimNodes;
+        delete this.configs;
+        delete this.animEndHandlers;
     }
 
     _createRenderTreeNode(defn) {
@@ -186,10 +211,5 @@ export class RenderObject extends MoveableSprite {
             }
         }
         return this;
-    }
-
-    // Remove from render tree, but do not destroy this RenderObject
-    remove() {
-        throw new Error('Not implemented');
     }
 }
